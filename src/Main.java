@@ -5,8 +5,10 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        try (Connection conn = DriverManager.getConnection("localhost:1521/FreePDB1", "mcernaMP3", "hola")) {
-            
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+
+            Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521/FreePDB1", "mcernaMP3", "hola");
             System.out.println("Que vols fer?\n 1. Imprimir tota la taula\n 2. Obtindre l'alumne que es diu Marc\n 3. Afegir un alumne\n 4. Imprimir tots els cognoms");
             Scanner sc = new Scanner(System.in);
             int opcio;
@@ -27,24 +29,28 @@ public class Main {
                     List<Alumnes> alumnes = new ArrayList<>();
 
                     while (resultatQuery.next()) {
-                        Integer id_alumne = resultatQuery.getInt(0);
-                        String cognoms = resultatQuery.getString(1);
-                        String nom = resultatQuery.getString(2);
-                        String email = resultatQuery.getString(3);
-                        String curs = resultatQuery.getString(4);
+                        Integer id_alumne = resultatQuery.getInt(1);
+                        String cognoms = resultatQuery.getString(2);
+                        String nom = resultatQuery.getString(3);
+                        String email = resultatQuery.getString(4);
+                        String curs = resultatQuery.getString(5);
 
                         Alumnes alumne = new Alumnes(id_alumne, cognoms, nom, email, curs);
                         alumnes.add(alumne);
                     }
 
-                    System.out.println(alumnes);
+                    for (int i = 0; i < alumnes.size(); i++) {
+                        System.out.println(alumnes.get(i).getId_alumne()+" "+alumnes.get(i).getCognoms()+" "+alumnes.get(i).getNom()+" "+alumnes.get(i).getEmail()+" "+alumnes.get(i).getCurs());
+                    }
 
                     break;
                 case 2:
                     //Obtindre l'alumne que es diu Marc
-                    PreparedStatement selectNom = conn.prepareStatement("select nom from alumnes where nom like 'Marc'");
+                    PreparedStatement selectNom = conn.prepareStatement("select * from alumnes where nom like 'Marc'");
                     ResultSet resultatNom = selectNom.executeQuery();
-                    System.out.println(resultatNom.getString(2));
+                    while (resultatNom.next()) {
+                        System.out.println(resultatNom.getInt(1)+" "+resultatNom.getString(2)+" "+resultatNom.getString(3)+" "+resultatNom.getString(4)+" "+resultatNom.getString(5));
+                    }
                     break;
                 case 3:
                     //Afegir un alumne
@@ -54,7 +60,7 @@ public class Main {
                     String email = sc.next();
                     String curs = sc.next();
 
-                    PreparedStatement insertAlumne = conn.prepareStatement("insert into alumnes (id_alumne, cognoms, nom, email, curs) values ("+id_alumne+","+cognoms+","+nom+","+email+","+curs);
+                    PreparedStatement insertAlumne = conn.prepareStatement("insert into alumnes (id_alumne, cognoms, nom, email, curs) values ('"+id_alumne+"','"+cognoms+"','"+nom+"','"+email+"','"+curs+"')");
                     insertAlumne.executeQuery();
                     break;
                 case 4:
@@ -63,8 +69,9 @@ public class Main {
                     ResultSet resultatCognoms = selectCognoms.executeQuery();
                     ArrayList<String> cognomsArr = new ArrayList<>();
                     while (resultatCognoms.next()) {
-                        cognomsArr.add(resultatCognoms.getString(0));
+                        cognomsArr.add(resultatCognoms.getString(1));
                     }
+                    System.out.println(cognomsArr);
                     break;
             }
             
