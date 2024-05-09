@@ -54,13 +54,13 @@ public class Main {
                     break;
                 case 3:
                     //Afegir un alumne
-                    Integer id_alumne = sc.nextInt();
+                    //Integer id_alumne = sc.nextInt();
                     String cognoms = sc.next();
                     String nom = sc.next();
                     String email = sc.next();
                     String curs = sc.next();
 
-                    PreparedStatement insertAlumne = conn.prepareStatement("insert into alumnes (id_alumne, cognoms, nom, email, curs) values ('"+id_alumne+"','"+cognoms+"','"+nom+"','"+email+"','"+curs+"')");
+                    PreparedStatement insertAlumne = conn.prepareStatement("insert into alumnes (id_alumne, cognoms, nom, email, curs) values ((select max(id_alumne) from alumnes)+1,'"+cognoms+"','"+nom+"','"+email+"','"+curs+"')");
                     insertAlumne.executeQuery();
                     break;
                 case 4:
