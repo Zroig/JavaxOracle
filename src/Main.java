@@ -16,7 +16,7 @@ public class Main {
 
                 opcio = sc.nextInt();
 
-                if (opcio < 0 || opcio<4) {
+                if (opcio < 0 || opcio>4) {
                     break;
                 }
             }
